@@ -62,9 +62,9 @@ class Calendar:
         if  from_calendar_system == "Saka":
             jd=sakacalendar.saka_to_julian_date(year, month,day)
         if to_calendar_system   == "Gregorian":
-            return dumps(sakacalendar.julian_date_to_gregorian(jd))
+            return sakacalendar.julian_date_to_gregorian(jd)
         if to_calendar_system == "Saka":
-            return dumps(sakacalendar.gregorian_to_saka_date(sakacalendar.julian_date_to_gregorian(jd)))
+            return sakacalendar.gregorian_to_saka_date(sakacalendar.julian_date_to_gregorian(jd))
         return "Not Implemented " + from_calendar_system + " -> " + to_calendar_system
 
     def panchanga(self, city_name, year,month,day):
@@ -76,13 +76,13 @@ class Calendar:
         calendar_details['Day of the week'] = self.WEEKDAYS[date.isoweekday()]
         calendar_details['City Name'] = city_name
         calendar_details['City Country'] = city.country
-        print('Information for %s/%s\n' % (city_name, city.country))
+        #print('Information for %s/%s\n' % (city_name, city.country))
         timezone = city.timezone
-        print('Timezone: %s' % timezone)
+        #print('Timezone: %s' % timezone)
         calendar_details['Timezone'] = timezone
         calendar_details['Latitude'] = city.latitude
         calendar_details['Longitude'] = city.longitude
-        print('Latitude: %.02f; Longitude: %.02f\n' %
+       #print('Latitude: %.02f; Longitude: %.02f\n' %
               (city.latitude, city.longitude))
         sun = city.sun(date=date, local=True)
         calendar_details['Dawn'] = str(sun['dawn'])
@@ -90,20 +90,20 @@ class Calendar:
         calendar_details['Noon'] = str(sun['noon'])
         calendar_details['Sunset'] = str(sun['sunset'])
         calendar_details['Dusk'] = str(sun['dusk'])
-        print('Dawn:    %s' % str(sun['dawn']))
-        print('Sunrise: %s' % str(sun['sunrise']))
-        print('Noon:    %s' % str(sun['noon']))
-        print('Sunset:  %s' % str(sun['sunset']))
-        print('Dusk:    %s' % str(sun['dusk']))
+       #print('Dawn:    %s' % str(sun['dawn']))
+       #print('Sunrise: %s' % str(sun['sunrise']))
+       #print('Noon:    %s' % str(sun['noon']))
+       #print('Sunset:  %s' % str(sun['sunset']))
+       #print('Dusk:    %s' % str(sun['dusk']))
         rahukaalam = city.rahukaalam(date=date, local=True)
         gulikakaalam = city.gulikakaalam(date=date, local=True)
         yamakandakaalam = city.yamakandakaalam(date=date, local=True)
         calendar_details['Rahukaalam'] = "from " + str(rahukaalam['start']) + " to " + str(rahukaalam['end'])
         calendar_details['Gulikakaalam'] = "from " + str(gulikakaalam['start']) + " to " + str(gulikakaalam['end'])
         calendar_details['Yamakandakaalam'] = "from " + str(yamakandakaalam['start']) + " to " + str(yamakandakaalam['end'])
-        print('Rahukaalam:    %s' % "from " + str(rahukaalam['start']) + " to " +  str(rahukaalam['end']))
-        print('Gulikakaalam:    %s' %  "from " + str(gulikakaalam['start']) + " to " +  str(gulikakaalam['end']))
-        print('Yamakandakaalam:    %s' % "from " + str(yamakandakaalam['start']) + " to " +  str(yamakandakaalam['end']))
+       #print('Rahukaalam:    %s' % "from " + str(rahukaalam['start']) + " to " +  str(rahukaalam['end']))
+       #print('Gulikakaalam:    %s' %  "from " + str(gulikakaalam['start']) + " to " +  str(gulikakaalam['end']))
+       #print('Yamakandakaalam:    %s' % "from " + str(yamakandakaalam['start']) + " to " +  str(yamakandakaalam['end']))
         calendar_details['Kollavarsham(Malayalam Calendar)'] = "Not implemented now"
         calendar_details['Tamil Calendar'] = "Not implemented now"
         calendar_details['Bengali Calendar'] = "Not implemented now"
