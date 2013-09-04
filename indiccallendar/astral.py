@@ -17,7 +17,7 @@ It provides 2 main classes :class:`Astral` and :class:`City`.
     * Calculates the events in the UTC timezone.
     * Holds a dictionary of City classes to provide information and
       calculations for a specific city.
-    
+
 :class:`City`
     Holds information about a city and provides functions to calculate
     the event times for the city in the correct time zone.
@@ -42,12 +42,9 @@ Dawn:    2009-04-22 05:12:56+01:00
 import datetime
 import os.path
 import types
-from math import cos, sin, tan, acos, asin, atan, atan2, floor, radians, degrees
-
-try:
-    import pytz
-except ImportError:
-    raise ImportError('The astral module requires the pytz module to be available.')
+from math import (cos, sin, tan, acos, asin, atan,
+                  atan2, floor, radians, degrees)
+import pytz
 
 __all__ = ['City', 'Astral','AstralError']
 
@@ -253,7 +250,7 @@ Tashkent,Uzbekistan,41°20'N,69°10'E,Asia/Tashkent
 Tegucigalpa,Honduras,14°05'N,87°14'W,America/Tegucigalpa
 Tehran,Iran,35°44'N,51°30'E,Asia/Tehran
 Thimphu,Bhutan,27°31'N,89°45'E,Asia/Thimphu
-Thrissur, Kerala,10°30'N,76°15'E,Asia/Calcutta 
+Thrissur, Kerala,10°30'N,76°15'E,Asia/Calcutta
 Tirane,Albania,41°18'N,19°49'E,Europe/Tirane
 Torshavn,Faroe Islands,62°05'N,06°56'W,Atlantic/Faroe
 Tripoli,Libyan Arab Jamahiriya,32°49'N,13°07'E,Africa/Tripoli
@@ -309,12 +306,12 @@ class AstralError(Exception):
 
 class City(object):
     """Provides access to information for single city."""
-    
+
     def __init__(self, info=None):
         """Initializes the object with a tuple of information.
-        
+
         The tuple should contain items in the following order
-        
+
         ================ =============
         Field            Default
         ================ =============
@@ -324,10 +321,10 @@ class City(object):
         longitude        0
         time zone name   Europe/London
         ================ =============
-            
+
         See :attr:`timezone` property for a method of obtaining time zone names
         """
-        
+
         self._astral = None
         if info is None:
             self._name = 'Greenwich'
@@ -350,45 +347,45 @@ class City(object):
 
     def name():
         doc = """The city name."""
-        
+
         def fget(self):
             return self._name
-            
+
         def fset(self, name):
-            self._name = name    
-            
+            self._name = name
+
         return locals()
-            
+
     name = property(**name())
-        
+
     def country():
         doc = """The country in which the city is located."""
-        
+
         def fget(self):
             return self._country
-            
+
         def fset(self, country):
             self._country = country
-            
+
         return locals()
-            
+
     country = property(**country())
-        
+
     def latitude():
         doc = u"""The city's latitude
 
         ``latitude`` can be set either as a string or as a number
-        
+
         For strings they must be of the form::
-        
+
             degrees°minutes'[N|S] e.g. 51°31'N
-            
+
         For numbers, negative numbers signify latitudes to the South.
         """
-        
+
         def fget(self):
             return self._latitude
-            
+
         def fset(self, latitude):
             if type(latitude) == types.StringType:
                 (deg, rest) = latitude.split("°", 1)
@@ -400,28 +397,28 @@ class City(object):
                     self._latitude = -self._latitude
             else:
                 self._latitude = latitude
-            
+
         return locals()
-        
+
     latitude = property(**latitude())
-        
+
     def longitude():
         doc = u"""The city's longitude.
 
         ``longitude`` can be set either as a string or as a number
-        
+
         For strings they must be of the form::
-        
+
             degrees°minutes'[E|W] e.g. 51°31'W
-            
+
         For numbers, negative numbers signify longitudes to the East.
         This is opposite to the normal convention of +ve being to the West
         but is required for the calculations.
         """
-        
+
         def fget(self):
             return self._longitude
-            
+
         def fset(self, longitude):
             if type(longitude) == types.StringType:
                 (deg, rest) = longitude.split("°", 1)
@@ -435,50 +432,50 @@ class City(object):
                     self._longitude = -self._longitude
             else:
                 self._longitude = longitude
-            
+
         return locals()
-        
+
     longitude = property(**longitude())
-        
+
     def timezone():
         doc = """The time zone name in which the city is located.
-        
+
         A list of time zone names can be obtained from pytz. For example.
-        
+
         >>> from pytz import all_timezones
         >>> for tz in all_timezones:
         ...     print tz
         """
-        
+
         def fget(self):
             return self._timezone
-        
+
         def fset(self, name):
             self._timezone = name
 
         return locals()
-            
+
     timezone = property(**timezone())
 
     def tz():
         doc = """The timezone."""
-        
+
         def fget(self):
             return pytz.timezone(self._timezone)
-            
+
         return locals()
-            
+
     tz = property(**tz())
 
     def dawn(self, date=None, local=True):
         """Return dawn time.
-        
+
         Calculates the time in the morning when the sun is a certain number of
         degrees below the horizon. By default this is 6 degrees but can be changed
         by setting the :attr:`Astral.solar_depression` property.
-        
+
         Parameters::
-        
+
             date  - The date for which to calculate the sunrise time.
                     A value of None uses the current date.
 
@@ -495,16 +492,16 @@ class City(object):
         dawn = self._astral.dawn_utc(date, self.latitude, self.longitude)
 
         if local:
-            return dawn.astimezone(self.tz)            
+            return dawn.astimezone(self.tz)
         else:
             return dawn
-        
+
     def sunrise(self, date=None, local=True):
         """Return sunrise time.
-        
+
         Calculates the time in the morning when the sun is a 0.833 degrees
         below the horizon. This is to account for refraction.
-        
+
         Parameters::
 
             date  - The date for which to calculate the sunrise time.
@@ -516,31 +513,31 @@ class City(object):
 
         if self._astral is None:
             self._astral = Astral()
-        
+
         if date is None:
             date = datetime.date.today()
 
         sunrise = self._astral.sunrise_utc(date, self.latitude, self.longitude)
 
         if local:
-            return sunrise.astimezone(self.tz)            
+            return sunrise.astimezone(self.tz)
         else:
             return sunrise
-        
+
     def solar_noon(self, date=None, local=True):
         """Return the solar noon time.
-        
+
         Calculates the time when the sun is at its highest point.
-        
+
         Parameters::
-        
+
             date  - The date for which to calculate the noon time.
                     A value of None uses the current date.
-            
+
             local - True  = Time to be returned in cities time zone (Default);
                     False = Time to be returned in UTC.
         """
-        
+
         if self._astral is None:
             self._astral = Astral()
 
@@ -550,25 +547,25 @@ class City(object):
         noon = self._astral.solar_noon_utc(date, self.longitude)
 
         if local:
-            return noon.astimezone(self.tz)            
+            return noon.astimezone(self.tz)
         else:
             return noon
-        
+
     def sunset(self, date=None, local=True):
         """Return sunset time.
-        
+
         Calculates the time in the evening when the sun is a 0.833 degrees
         below the horizon. This is to account for refraction.
-        
+
         Parameters::
-        
+
             date  - The date for which to calculate the sunset time.
                     A value of None uses the current date.
-            
+
             local - True  = Time to be returned in cities time zone (Default);
                     False = Time to be returned in UTC.
         """
-        
+
         if self._astral is None:
             self._astral = Astral()
 
@@ -578,26 +575,26 @@ class City(object):
         sunset = self._astral.sunset_utc(date, self.latitude, self.longitude)
 
         if local:
-            return sunset.astimezone(self.tz)            
+            return sunset.astimezone(self.tz)
         else:
             return sunset
-        
+
     def dusk(self, date=None, local=True):
         """Return dusk time.
-        
+
         Calculates the time in the evening when the sun is a certain number of
         degrees below the horizon. By default this is 6 degrees but can be changed
         by setting the :attr:`Astral.solar_depression` property.
-        
+
         Parameters::
-        
+
             date  - The date for which to calculate the dusk time.
                     A value of None uses the current date.
-            
+
             local - True  = Time to be returned in cities time zone (Default);
                     False = Time to be returned in UTC.
         """
-        
+
         if self._astral is None:
             self._astral = Astral()
 
@@ -607,22 +604,22 @@ class City(object):
         dusk = self._astral.dusk_utc(date, self.latitude, self.longitude)
 
         if local:
-            return dusk.astimezone(self.tz)            
+            return dusk.astimezone(self.tz)
         else:
             return dusk
-    
+
     def sun(self, date=None, local=True):
         """Returns dawn, sunrise, noon, sunset and dusk as a dictionary.
-        
+
         Parameters::
-        
+
             date  - The date for which to calculate the times.
                     A value of None uses the current date.
-            
+
             local - True  = Time to be returned in cities time zone (Default);
                     False = Time to be returned in UTC.
         """
-        
+
         if self._astral is None:
             self._astral = Astral()
 
@@ -639,12 +636,12 @@ class City(object):
 
     def rahukaalam(self, date=None, local=True):
         """Calculates the period of rahukaalam.
-        
+
         Parameters::
-        
+
             date  - The date for which to calculate rahukaalam period.
                     A value of None uses the current date.
-            
+
             local - True  = Time to be returned in cities time zone (Default);
                     False = Time to be returned in UTC.
         """
@@ -660,16 +657,16 @@ class City(object):
         if local:
             for key, dt in rahukaalam.iteritems():
                 rahukaalam[key] = dt.astimezone(self.tz)
-            
+
         return rahukaalam
     def gulikakaalam(self, date=None, local=True):
         """Calculates the period of gulikakaalam.
-        
+
         Parameters::
-        
+
             date  - The date for which to calculate gulikakaalam period.
                     A value of None uses the current date.
-            
+
             local - True  = Time to be returned in cities time zone (Default);
                     False = Time to be returned in UTC.
         """
@@ -685,16 +682,16 @@ class City(object):
         if local:
             for key, dt in gulikakaalam.iteritems():
                 gulikakaalam[key] = dt.astimezone(self.tz)
-            
+
         return gulikakaalam
     def yamakandakaalam(self, date=None, local=True):
         """Calculates the period of yamakandakaalam.
-        
+
         Parameters::
-        
+
             date  - The date for which to calculate yamakandakaalam period.
                     A value of None uses the current date.
-            
+
             local - True  = Time to be returned in cities time zone (Default);
                     False = Time to be returned in UTC.
         """
@@ -710,19 +707,19 @@ class City(object):
         if local:
             for key, dt in yamakandakaalam.iteritems():
                 yamakandakaalam[key] = dt.astimezone(self.tz)
-            
+
         return yamakandakaalam
     def zodiac(self,date=None, local=True):
         if self._astral is None:
             self._astral = Astral()
-        return self._astral._zodiac(date.day,date.month,date.year)    
+        return self._astral._zodiac(date.day,date.month,date.year)
     def solar_azimuth(self, dateandtime=None):
         """Calculates the solar azimuth angle for a specific time.
-        
+
         The angle returned is in degrees clockwise from North.
-        
+
         Parameters::
-        
+
             dateandtime - The date and time for which to calculate the angle.
         """
 
@@ -731,16 +728,16 @@ class City(object):
 
         if dateandtime is None:
             dateandtime = datetime.datetime.now(tz=self.tz)
-            
+
         return self._astral.solar_azimuth(dateandtime, self.latitude, self.longitude)
-    
+
     def solar_elevation(self, dateandtime=None):
         """Calculates the solar elevation angle for a specific time.
-        
+
         The angle returned is in degrees from the horizon
-        
+
         Parameters::
-        
+
             dateandtime - The date and time for which to calculate the angle.
         """
 
@@ -751,32 +748,32 @@ class City(object):
             dateandtime = datetime.datetime.now(tz=self.tz)
 
         return self._astral.solar_elevation(dateandtime, self.latitude, self.longitude)
-        
+
     def astral():
         def fget(self):
             return self._astral
-            
+
         def fset(self, astral):
             self._astral = astral
-            
+
         return locals()
-        
+
     astral = property(**astral())
-    
+
 
 class Astral(object):
     def __init__(self):
         """Initialise the list of cities.
         """
-        
+
         self._cities = {}
         self._init_cities()
-        
+
         self._depression = 6  # Set default depression in degrees
 
     def __getitem__(self, value):
         """Returns a City object for the specified city.
-        
+
         Handles city names with spaces and mixed case.
         """
 
@@ -787,7 +784,7 @@ class Astral(object):
 
         if city_name[0] == '"' and city_name[-1] == '"':
             city_name = city_name.strip('"')
-            
+
         city_name = city_name.strip()
 
         for (name, city) in self._cities.iteritems():
@@ -802,17 +799,17 @@ class Astral(object):
 
         def fget(self):
             return self._cities
-            
+
         return locals()
-        
+
     cities = property(**cities())
 
     def solar_depression():
         doc = """The number of degrees the sun must be below the horizon for the dawn/dusk calc.
-        
+
         Can either be set as a number of degrees below the horizon or as
         one of the following strings
-        
+
         ============= =======
         String        Degrees
         ============= =======
@@ -821,10 +818,10 @@ class Astral(object):
         astronomical    18.0
         ============= =======
         """
-        
+
         def fget(self):
             return self._depression
-            
+
         def fset(self, depression):
             if type(depression) == types.StringType:
                 try:
@@ -833,41 +830,41 @@ class Astral(object):
                     raise KeyError("solar_depression must be either a number or one of 'civil', 'nautical' or 'astronomical'")
             else:
                 self._depression = float(depression)
-            
+
         return locals()
-        
+
     solar_depression = property(**solar_depression())
 
     def sun_utc(self, date, latitude, longitude):
         """Returns dawn, sunrise, noon, sunset and dusk times as a dictionary.
         """
-        
+
         dawn = self.dawn_utc(date, latitude, longitude)
         sunrise = self.sunrise_utc(date, latitude, longitude)
         noon = self.solar_noon_utc(date, longitude)
         sunset = self.sunset_utc(date, latitude, longitude)
         dusk = self.dusk_utc(date, latitude, longitude)
-        
+
         return {'dawn': dawn, 'sunrise': sunrise, 'noon': noon, 'sunset': sunset, 'dusk': dusk}
 
     def dawn_utc(self, date, latitude, longitude):
         """Calculate dawn time for a specific date at a particular position.
-        
+
         Returns date/time in UTC
         """
-        
+
         julianday = self._julianday(date.day, date.month, date.year)
 
         if latitude > 89.8:
             latitude = 89.8
-            
+
         if latitude < -89.8:
             latitude = -89.8
-        
+
         t = self._jday_to_jcentury(julianday)
         eqtime = self._eq_of_time(t)
         solarDec = self._sun_declination(t)
-        
+
         try:
             hourangle = self._hour_angle_sunrise(latitude, solarDec)
         except:
@@ -884,7 +881,7 @@ class Astral(object):
         delta = longitude - degrees(hourangle)
         timeDiff = 4 * delta
         timeUTC = 720 + timeDiff - eqtime
-        
+
         timeUTC = timeUTC/60.0
         hour = int(timeUTC)
         minute = int((timeUTC - hour) * 60)
@@ -896,10 +893,10 @@ class Astral(object):
 
     def sunrise_utc(self, date, latitude, longitude):
         """Calculate sunrise time for a specific date at a particular position.
-        
+
         Returns date/time in UTC
         """
-        
+
         julianday = self._julianday(date.day, date.month, date.year)
 
         t = self._jday_to_jcentury(julianday)
@@ -922,7 +919,7 @@ class Astral(object):
         delta = longitude - degrees(hourangle)
         timeDiff = 4 * delta
         timeUTC = 720 + timeDiff - eqtime
-        
+
         timeUTC = timeUTC/60.0
         hour = int(timeUTC)
         minute = int((timeUTC - hour) * 60)
@@ -934,10 +931,10 @@ class Astral(object):
 
     def solar_noon_utc(self, date, longitude):
         """Calculate solar noon time for a specific date at a particular position.
-        
+
         Returns date/time in UTC
         """
-        
+
         julianday = self._julianday(date.day, date.month, date.year)
 
         newt = self._jday_to_jcentury(julianday + 0.5 + longitude / 360.0)
@@ -957,10 +954,10 @@ class Astral(object):
 
     def sunset_utc(self, date, latitude, longitude):
         """Calculate sunset time for a specific date at a particular position.
-        
+
         Returns date/time in UTC
         """
-        
+
         julianday = self._julianday(date.day, date.month, date.year)
 
         t = self._jday_to_jcentury(julianday)
@@ -983,7 +980,7 @@ class Astral(object):
         delta = longitude - degrees(hourangle)
         timeDiff = 4 * delta
         timeUTC = 720 + timeDiff - eqtime
-        
+
         timeUTC = timeUTC/60.0
         hour = int(timeUTC)
         minute = int((timeUTC - hour) * 60)
@@ -995,18 +992,18 @@ class Astral(object):
 
     def dusk_utc(self, date, latitude, longitude):
         """Calculate dusk time for a specific date at a particular position.
-        
+
         Returns date/time in UTC
         """
-        
+
         julianday = self._julianday(date.day, date.month, date.year)
 
         if latitude > 89.8:
             latitude = 89.8
-            
+
         if latitude < -89.8:
             latitude = -89.8
-        
+
         t = self._jday_to_jcentury(julianday)
         eqtime = self._eq_of_time(t)
         solarDec = self._sun_declination(t)
@@ -1027,7 +1024,7 @@ class Astral(object):
         delta = longitude - degrees(hourangle)
         timeDiff = 4 * delta
         timeUTC = 720 + timeDiff - eqtime
-        
+
         timeUTC = timeUTC/60.0
         hour = int(timeUTC)
         minute = int((timeUTC - hour) * 60)
@@ -1040,7 +1037,7 @@ class Astral(object):
     def rahukaalam_utc(self, date, latitude, longitude):
         """Calculate ruhakaalam times at a particular location.
         """
-        
+
         if date is None:
             date = datetime.date.today()
 
@@ -1049,23 +1046,23 @@ class Astral(object):
             sunset = self.sunset_utc(date, latitude, longitude)
         except:
             raise AstralError('Sun remains below horizon on this day, at this location.')
-        
+
         octant_duration = (sunset - sunrise) / 8
 
         # Mo,Sa,Fr,We,Th,Tu,Su
         octant_index = [1,6,4,5,3,2,7]
-        
+
         weekday = date.weekday()
         octant = octant_index[weekday]
         print weekday, octant
         start = sunrise + (octant_duration * octant)
         end = start + octant_duration
-        
+
         return {'start': start, 'end': end}
     def gulikakaalam_utc(self, date, latitude, longitude):
         """Calculate ruhakaalam times at a particular location.
         """
-        
+
         if date is None:
             date = datetime.date.today()
 
@@ -1074,22 +1071,22 @@ class Astral(object):
             sunset = self.sunset_utc(date, latitude, longitude)
         except:
             raise AstralError('Sun remains below horizon on this day, at this location.')
-        
+
         octant_duration = (sunset - sunrise) / 8
 
         octant_index = [5,4,3,2,1,0,6]
-        
+
         weekday = date.weekday()
         octant = octant_index[weekday]
-        
+
         start = sunrise + (octant_duration * octant)
         end = start + octant_duration
-        
+
         return {'start': start, 'end': end}
     def yamakandakaalam_utc(self, date, latitude, longitude):
         """Calculate yamakanda times at a particular location.
         """
-        
+
         if date is None:
             date = datetime.date.today()
 
@@ -1098,29 +1095,29 @@ class Astral(object):
             sunset = self.sunset_utc(date, latitude, longitude)
         except:
             raise AstralError('Sun remains below horizon on this day, at this location.')
-        
+
         octant_duration = (sunset - sunrise) / 8
 
         octant_index = [3,2,1,0,6,5,4]
-        
+
         weekday = date.weekday()
         octant = octant_index[weekday]
-        
+
         start = sunrise + (octant_duration * octant)
         end = start + octant_duration
-        
+
         return {'start': start, 'end': end}
 
     def solar_azimuth(self, dateandtime, latitude, longitude):
         """Calculate the azimuth of the sun as a specific date/time and location.
         """
-    
+
         if latitude > 89.8:
             latitude = 89.8
-            
+
         if latitude < -89.8:
             latitude = -89.8
-    
+
         zone = -dateandtime.utcoffset().seconds / 3600.0
         utc_datetime = dateandtime.astimezone(pytz.utc)
         timenow = utc_datetime.hour + (utc_datetime.minute / 60.0) + (utc_datetime.second / 3600)
@@ -1131,48 +1128,48 @@ class Astral(object):
         alpha = self._sun_rt_ascension(t)
         theta = self._sun_declination(t)
         Etime = self._eq_of_time(t)
-    
+
         eqtime = Etime
         solarDec = theta   # in degrees
         earthRadVec = R
-    
+
         solarTimeFix = eqtime - (4.0 * longitude) + (60 * zone)
         trueSolarTime = dateandtime.hour * 60.0 + dateandtime.minute + dateandtime.second / 60.0 + solarTimeFix
         #    in minutes
-    
+
         while trueSolarTime > 1440:
             trueSolarTime = trueSolarTime - 1440
-        
+
         hourangle = trueSolarTime / 4.0 - 180.0
         #    Thanks to Louis Schwarzmayr for the next line:
         if hourangle < -180:
             hourangle = hourangle + 360.0
-    
+
         harad = radians(hourangle)
-    
+
         csz = sin(radians(latitude)) * sin(radians(solarDec)) + \
               cos(radians(latitude)) * cos(radians(solarDec)) * cos(harad)
-    
+
         if csz > 1.0:
             csz = 1.0
         elif csz < -1.0:
             csz = -1.0
-        
+
         zenith = degrees(acos(csz))
-    
+
         azDenom = (cos(radians(latitude)) * sin(radians(zenith)))
-        
+
         if (abs(azDenom) > 0.001):
             azRad = ((sin(radians(latitude)) *  cos(radians(zenith))) - sin(radians(solarDec))) / azDenom
-            
+
             if abs(azRad) > 1.0:
                 if azRad < 0:
                     azRad = -1.0
                 else:
                     azRad = 1.0
-    
+
             azimuth = 180.0 - degrees(acos(azRad))
-    
+
             if hourangle > 0.0:
                 azimuth = -azimuth
         else:
@@ -1180,74 +1177,74 @@ class Astral(object):
                 azimuth = 180.0
             else:
                 azimuth = 0#
-    
+
         if azimuth < 0.0:
             azimuth = azimuth + 360.0
-                 
+
         return azimuth
 
     def solar_elevation(self, dateandtime, latitude, longitude):
         """Calculate the elevation of the sun as a specific date/time and location.
         """
-    
+
         if latitude > 89.8:
             latitude = 89.8
-            
+
         if latitude < -89.8:
             latitude = -89.8
 
         zone = -dateandtime.utcoffset().seconds / 3600.0
         utc_datetime = dateandtime.astimezone(pytz.utc)
         timenow = utc_datetime.hour + (utc_datetime.minute / 60.0) + (utc_datetime.second / 3600)
-    
+
         JD = self._julianday(dateandtime.day, dateandtime.month, dateandtime.year)
         t = self._jday_to_jcentury(JD + timenow / 24.0)
         R = self._sun_rad_vector(t)
         alpha = self._sun_rt_ascension(t)
         theta = self._sun_declination(t)
         Etime = self._eq_of_time(t)
-    
+
         eqtime = Etime
         solarDec = theta   # in degrees
         earthRadVec = R
-    
+
         solarTimeFix = eqtime - (4.0 * longitude) + (60 * zone)
         trueSolarTime = dateandtime.hour * 60.0 + dateandtime.minute + dateandtime.second / 60.0 + solarTimeFix
         #    in minutes
-    
+
         while trueSolarTime > 1440:
             trueSolarTime = trueSolarTime - 1440
-        
+
         hourangle = trueSolarTime / 4.0 - 180.0
         #    Thanks to Louis Schwarzmayr for the next line:
         if hourangle < -180:
             hourangle = hourangle + 360.0
-    
+
         harad = radians(hourangle)
-    
+
         csz = sin(radians(latitude)) * sin(radians(solarDec)) + \
               cos(radians(latitude)) * cos(radians(solarDec)) * cos(harad)
-    
+
         if csz > 1.0:
             csz = 1.0
         elif csz < -1.0:
             csz = -1.0
-        
+
         zenith = degrees(acos(csz))
-    
+
         azDenom = (cos(radians(latitude)) * sin(radians(zenith)))
-        
+
         if (abs(azDenom) > 0.001):
             azRad = ((sin(radians(latitude)) *  cos(radians(zenith))) - sin(radians(solarDec))) / azDenom
-            
+
             if abs(azRad) > 1.0:
                 if azRad < 0:
                     azRad = -1.0
                 else:
                     azRad = 1.0
-    
+
             azimuth = 180.0 - degrees(acos(azRad))
-    
+
             if hourangle > 0.0:
                 azimuth = -azimuth
         else:
@@ -1255,10 +1252,10 @@ class Astral(object):
                 azimuth = 180.0
             else:
                 azimuth = 0#
-    
+
         if azimuth < 0.0:
             azimuth = azimuth + 360.0
-                    
+
         exoatmElevation = 90.0 - zenith
 
         if exoatmElevation > 85.0:
@@ -1274,25 +1271,25 @@ class Astral(object):
                 refractionCorrection = 1735.0 + exoatmElevation * (step3)
             else:
                 refractionCorrection = -20.774 / te
-    
+
             refractionCorrection = refractionCorrection / 3600.0
-            
+
         solarzen = zenith - refractionCorrection
-                     
+
         solarelevation = 90.0 - solarzen
-    
+
         return solarelevation
 
     def _julianday(self, day, month, year):
         if month <= 2:
             year = year - 1
             month = month + 12
-        
+
         A = floor(year / 100.0)
         B = 2 - A + floor(A / 4.0)
 
         return floor(365.25 * (year + 4716)) + floor(30.6001 * (month + 1)) + day + B - 1524.5
-        
+
     def _jday_to_jcentury(self, julianday):
         return (julianday - 2451545.0) / 36525.0
 
@@ -1312,14 +1309,14 @@ class Astral(object):
 
         omega = 125.04 - 1934.136 * juliancentury
         return e0 + 0.00256 * cosd(omega)
-    
+
     def _geom_mean_long_sun(self, juliancentury):
         l0 = 280.46646 + juliancentury * (36000.76983 + 0.0003032 * juliancentury)
         return l0 % 360.0
-        
+
     def _eccentricity_earth_orbit(self, juliancentury):
         return 0.016708634 - juliancentury * (0.000042037 + 0.0000001267 * juliancentury)
-        
+
     def _geom_mean_anomaly_sun(self, juliancentury):
         return 357.52911 + juliancentury * (35999.05029 - 0.0001537 * juliancentury)
 
@@ -1357,7 +1354,7 @@ class Astral(object):
 
         c = sinm * (1.914602 - juliancentury * (0.004817 + 0.000014 * juliancentury)) + \
             sin2m * (0.019993 - 0.000101 * juliancentury) + sin3m * 0.000289
-            
+
         return c
 
     def _sun_true_long(self, juliancentury):
@@ -1383,12 +1380,12 @@ class Astral(object):
         sdRad = radians(solar_dec)
 
         HA = (acos(cos(radians(90 + solar_depression)) / (cos(latRad) * cos(sdRad)) - tan(latRad) * tan(sdRad)))
-        
+
         return HA
 
     def _hour_angle_sunrise(self, latitude, solar_dec):
         return self._hour_angle(latitude, solar_dec, 0.833)
-        
+
     def _hour_angle_sunset(self, latitude, solar_dec):
         return -self._hour_angle(latitude, solar_dec, 0.833)
 
@@ -1407,7 +1404,7 @@ class Astral(object):
     def _sun_rad_vector(self, juliancentury):
         v = self._sun_true_anomoly(juliancentury)
         e = self._eccentricity_earth_orbit(juliancentury)
- 
+
         return (1.000001018 * (1 - e * e)) / (1 + e * cos(radians(v)))
 
     def _obliquity_correction(self, juliancentury):
@@ -1419,7 +1416,7 @@ class Astral(object):
     def _sun_rt_ascension(self, juliancentury):
         e = self._obliquity_correction(juliancentury)
         lambd = self._sun_apparent_long(juliancentury)
- 
+
         tananum = (cos(radians(e)) * sin(radians(lambd)))
         tanadenom = (cos(radians(lambd)))
 
@@ -1432,7 +1429,7 @@ class Astral(object):
             if line != '' and line[0] != '#':
                 if line[-1] == '\n':
                     line = line[:-1]
-                
+
                 city_info = line.split(',')
                 if city_info[0] not in self._cities:
                     city = City(city_info)
